@@ -3,7 +3,13 @@
     <section class="hero">
       <div class="hero-body">
         <div class="container">
-          <h1 class="title">Vue Movies CRUD</h1>
+          <h1 class="title has-text-success">
+            <span class="icon">
+              <i class="fas fa-video"></i>
+            </span>
+            &nbsp;
+            Vue Movies CRUD
+          </h1>
           <h2 class="subtitle">Manage Movies in one place</h2>
           <hr>
           <Home/>
@@ -14,7 +20,7 @@
 </template>
 
 <script>
-  import Home from "@/views/Home.vue";
+  import Home from "@/views/Home";
 
   export default {
     components: {
