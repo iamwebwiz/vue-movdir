@@ -40,8 +40,12 @@
             </div>
           </div>
           <footer class="card-footer">
-            <a href="#" class="card-footer-item">Edit</a>
-            <a href="#" class="card-footer-item is-danger">Delete</a>
+            <a href="javascript:;" class="card-footer-item">Edit</a>
+            <a
+              href="javascript:;"
+              class="card-footer-item has-text-danger"
+              @click="deleteMovie(index)"
+            >Delete</a>
           </footer>
         </div>
       </div>
@@ -72,6 +76,19 @@
               this.loading = !this.loading;
             })
           )
+          .catch(err => console.log(err));
+      },
+      deleteMovie(index) {
+        let movie = this.movies[index];
+        fetch(`https://simplecrudapi.herokuapp.com/api/movies/${movie.id}`, {
+          method: "DELETE"
+        })
+          .then(res => {
+            res.json().then(data => {
+              this.movies.splice(index, 1);
+              alert("Movie deleted successfully!");
+            });
+          })
           .catch(err => console.log(err));
       }
     }
