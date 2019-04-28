@@ -55,11 +55,14 @@
 </template>
 
 <script>
+  import moment from "moment";
+
   export default {
     data() {
       return {
         loading: true,
-        movies: []
+        movies: [],
+        moment: moment
       };
     },
     created() {
