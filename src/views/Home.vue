@@ -36,7 +36,7 @@
             <div class="content">
               {{ movie.synopsis }}
               <br>
-              <time :datetime="movie.created_at" v-text="movie.created_at"></time>
+              <time :datetime="movie.created_at" v-text="creationDate(movie.created_at)"></time>
             </div>
           </div>
           <footer class="card-footer">
@@ -93,6 +93,9 @@
             });
           })
           .catch(err => console.log(err));
+      },
+      creationDate(date) {
+        return moment(date).format("DD/MM/YYYY");
       }
     }
   };
