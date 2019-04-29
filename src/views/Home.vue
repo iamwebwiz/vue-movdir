@@ -35,12 +35,16 @@
 
             <div class="content">
               {{ movie.synopsis }}
-              <br>
+              <br>Added on:
               <time :datetime="movie.created_at" v-text="creationDate(movie.created_at)"></time>
             </div>
           </div>
           <footer class="card-footer">
-            <a href="javascript:;" class="card-footer-item">Edit</a>
+            <a
+              href="javascript:;"
+              class="card-footer-item has-text-primary"
+              @click="editMovie(index)"
+            >Edit</a>
             <a
               href="javascript:;"
               class="card-footer-item has-text-danger"
@@ -51,18 +55,29 @@
       </div>
     </div>
     <div v-else class="has-text-centered">No movies yet.</div>
+
+    <EditMovie :movie="movie" :updating="updating" :onMovieUpdate="updateMovie"></EditMovie>
   </div>
 </template>
 
 <script>
   import moment from "moment";
+  import axios from "axios";
+  import swal from "sweetalert";
+
+  import EditMovie from "./EditMovie";
 
   export default {
+    components: {
+      EditMovie
+    },
     data() {
       return {
         loading: true,
         movies: [],
-        moment: moment
+        moment: moment,
+        updating: false,
+        movie: {}
       };
     },
     created() {
@@ -72,30 +87,74 @@
     },
     methods: {
       fetchMovies() {
-        fetch("https://simplecrudapi.herokuapp.com/api/movies")
-          .then(res =>
-            res.json().then(movies => {
-              this.movies = movies;
-              this.loading = !this.loading;
-            })
-          )
-          .catch(err => console.log(err));
+        axios
+          .get("https://simplecrudapi.herokuapp.com/api/movies")
+          .then(res => {
+            this.movies = res.data;
+            this.loading = !this.loading;
+          })
+          .catch(err => console.log(err.response));
       },
       deleteMovie(index) {
-        let movie = this.movies[index];
-        fetch(`https://simplecrudapi.herokuapp.com/api/movies/${movie.id}`, {
-          method: "DELETE"
-        })
-          .then(res => {
-            res.json().then(data => {
-              this.movies.splice(index, 1);
-              alert("Movie deleted successfully!");
-            });
-          })
-          .catch(err => console.log(err));
+        swal({
+          title: "Are you sure?",
+          text: "This action cannot be reversed. Proceed?",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true
+        }).then(willDelete => {
+          if (willDelete) {
+            let movie = this.movies[index];
+            axios
+              .delete(
+                `https://simplecrudapi.herokuapp.com/api/movies/${movie.id}`
+              )
+              .then(res => {
+                this.movies.splice(index, 1);
+                swal(res.data, {
+                  icon: "success"
+                });
+              })
+              .catch(err => console.log(err.response));
+          } else {
+            //
+          }
+        });
       },
       creationDate(date) {
         return moment(date).format("DD/MM/YYYY");
+      },
+      editMovie(index) {
+        let movie = this.movies[index];
+        this.movie = movie;
+        let html = document.querySelector("html");
+        let modal = document.querySelector("#editMovieModal");
+        modal.classList.add("is-active");
+        html.classList.add("is-clipped");
+
+        modal.querySelector(".modal-background").addEventListener("click", e => {
+          modal.classList.remove("is-active");
+          html.classList.remove("is-clipped");
+        });
+      },
+      updateMovie() {
+        let movie = this.movie;
+        this.updating = !this.updating;
+        axios
+          .put(`https://simplecrudapi.herokuapp.com/api/movies/${movie.id}`, {
+            title: movie.title,
+            genre: movie.genre,
+            synopsis: movie.synopsis
+          })
+          .then(res => {
+            swal("Success!", res.data, "success");
+            this.updating = !this.updating;
+            document
+              .querySelector("#editMovieModal")
+              .classList.remove("is-active");
+            document.querySelector("html").classList.remove("is-clipped");
+          })
+          .catch(err => console.log(err.response));
       }
     }
   };
