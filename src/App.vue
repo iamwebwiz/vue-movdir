@@ -20,7 +20,7 @@
             </div>
             <div class="level-right">
               <div class="level-item">
-                <button class="button is-info">Add Movie</button>
+                <button class="button is-info" @click="addNewMovie">Add Movie</button>
               </div>
             </div>
           </div>
@@ -29,15 +29,79 @@
         </div>
       </div>
     </section>
+
+    <NewMovie :movie="movie" :addMovie="addMovie" :adding="adding" :closeModal="closeModal"></NewMovie>
   </div>
 </template>
 
 <script>
-  import Home from "@/views/Home";
+  import axios from "axios";
+  import swal from "sweetalert";
+
+  import Home from "./views/Home";
+  import NewMovie from "./views/NewMovie";
 
   export default {
     components: {
-      Home
+      Home,
+      NewMovie
+    },
+    data() {
+      return {
+        adding: false,
+        movie: {
+          title: "",
+          genre: "",
+          synopsis: "",
+          image: ""
+        }
+      };
+    },
+    methods: {
+      addNewMovie() {
+        document.querySelector("#newMovieModal").classList.add("is-active");
+        document.querySelector("html").classList.add("is-clipped");
+
+        document
+          .querySelector("#newMovieModal")
+          .querySelector(".modal-background")
+          .addEventListener("click", e => {
+            document
+              .querySelector("#newMovieModal")
+              .classList.remove("is-active");
+            document.querySelector("html").classList.remove("is-clipped");
+          });
+      },
+      closeModal() {
+        document.querySelector("#newMovieModal").classList.remove("is-active");
+        document.querySelector("html").classList.remove("is-clipped");
+      },
+      resetForm() {
+        this.movie = { title: "", genre: "", synopsis: "", image: "" };
+      },
+      addMovie() {
+        this.adding = !this.adding;
+        const CORS = "https://cors-anywhere.herokuapp.com/";
+
+        axios
+          .post(CORS + "https://simplecrudapi.herokuapp.com/api/movies/new", {
+            title: this.movie.title,
+            genre: this.movie.genre,
+            synopsis: this.movie.synopsis,
+            image: this.movie.image
+          })
+          .then(res => {
+            swal("Success!", res.data, "success");
+            this.resetForm();
+            this.adding = !this.adding;
+            this.closeModal();
+          })
+          .catch(err => {
+            console.log(err.response);
+            this.resetForm();
+            this.adding = !this.adding;
+          });
+      }
     }
   };
 </script>

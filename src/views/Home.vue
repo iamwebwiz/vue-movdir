@@ -135,6 +135,7 @@
         modal.querySelector(".modal-background").addEventListener("click", e => {
           modal.classList.remove("is-active");
           html.classList.remove("is-clipped");
+          this.movie = {};
         });
       },
       updateMovie() {
@@ -153,6 +154,7 @@
               .querySelector("#editMovieModal")
               .classList.remove("is-active");
             document.querySelector("html").classList.remove("is-clipped");
+            this.movie = {};
           })
           .catch(err => console.log(err.response));
       }
