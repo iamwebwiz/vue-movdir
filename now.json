@@ -1,0 +1,10 @@
+{
+  "name": "vuemovdir",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@now/static-build"
+    }
+  ],
+  "version": 2
+}
