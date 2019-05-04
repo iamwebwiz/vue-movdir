@@ -16,7 +16,7 @@
                 id="title"
                 class="input"
                 placeholder="Movie Title"
-                v-model="movie.title"
+                v-model="newMovie.title"
               >
             </div>
           </div>
@@ -24,7 +24,7 @@
           <div class="field">
             <label class="label" for="genre">Genre</label>
             <div class="control">
-              <input type="text" id="genre" placeholder="Genre" v-model="movie.genre" class="input">
+              <input type="text" id="genre" placeholder="Genre" v-model="newMovie.genre" class="input">
             </div>
           </div>
 
@@ -55,7 +55,7 @@
               <textarea
                 placeholder="Synopsis"
                 id="synopsis"
-                v-model="movie.synopsis"
+                v-model="newMovie.synopsis"
                 class="textarea"
               ></textarea>
             </div>
@@ -78,10 +78,10 @@
 
 <script>
   export default {
-    props: ["movie", "adding", "closeModal", "addMovie"],
+    props: ["newMovie", "adding", "closeModal", "addMovie"],
     methods: {
       handleImageChange() {
-        this.movie.image = this.$refs.image.files[0];
+        this.newMovie.image = this.$refs.image.files[0];
       }
     }
   };
